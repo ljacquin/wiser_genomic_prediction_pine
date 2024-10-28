@@ -1,0 +1,6 @@
+data/_original_data_files/*
+data/genomic_data/*
+data/phenotype_data/*
+data/phenotype_data/wiser_phenotype_estimates/*
+results/genomic_prediction/*
+results/genomic_prediction_graphics/*
