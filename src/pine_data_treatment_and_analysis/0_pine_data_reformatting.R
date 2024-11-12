@@ -42,6 +42,10 @@ pheno_dir_path <- "../../data/phenotype_data/"
 # set output result path for genomic graphics
 output_genom_graphics_path <- "../../results/genomic_prediction_graphics/"
 
+# set maximum number of principal components to be tested using akaike
+# information criterion
+max_n_comp_ <- 10
+
 # define traits_
 traits_ <- c("H", "I", "D", "T4", "T5", "T6")
 
