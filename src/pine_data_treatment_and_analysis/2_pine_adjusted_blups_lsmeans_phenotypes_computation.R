@@ -24,6 +24,8 @@ library(parallel)
 library(doParallel)
 library(MASS)
 library(lme4)
+library(vcd)
+library(car)
 
 # define computation mode, i.e. "local" or "cluster"
 computation_mode <- "cluster"
@@ -145,6 +147,7 @@ for (file_ in files_names_spats_adj_pheno) {
       )),
       data = df_
     )
+    print(attributes(lmer_model_))
     blup_list_[[str_replace_all(file_, "_spats_adjusted_.*",
       replacement = ""
     )]] <- data.frame(
@@ -152,7 +155,42 @@ for (file_ in files_names_spats_adj_pheno) {
       "blup" = as.numeric(unlist(ranef(lmer_model_)$Genotype))
     )
 
-    # compute adjusted ls-means for genotypes across environments
+    # compute some statistics for trait for verification purposes, i.e.multi-location h2,
+    # VIF and Cramer's V
+    compute_trait_stats_ <- FALSE
+    if (compute_trait_stats_) {
+      nr_bar_ <- mean(table(df_$Genotype))
+      nl <- length(unique(df_$Envir))
+      lmer_model_ <- lmer(
+        as.formula(paste0(
+          Y,
+          " ~ 1 + Envir + ", paste(pc_var_names_[1:n_opt_comp_aic_],
+            collapse = " + "
+          ),
+          " + (1 | Genotype) + (1|Genotype:Envir)"
+        )),
+        data = df_
+      )
+      multi_env_h2 <- compute_multi_location_clonal_mean_h2(
+        lmer_mod_ = lmer_model_, nr_bar_, nl
+      )
+
+      # compute Cramer's V index and variance inflation factor (VIF) to evaluate collinearity
+      cont_tab <- table(df_$Genotype, df_$Envir)
+      cramer_v <- assocstats(cont_tab)$cramer
+      print(paste0(
+        "Cramer' V for ", str_replace(Y, "_spats_adj_pheno", ": "),
+        round(cramer_v, 2)
+      )) # strong association and colinear if v > 0.3
+
+      lm_model <- lm(formula(paste0(Y, "~ 1 + Genotype + Envir")), data = df_)
+      vif_values <- vif(lm_model)
+      print(vif_values)
+      aliased_vars <- attributes(alias(lm_model)$Complete)$dimnames[[1]]
+      print(aliased_vars)
+    }
+
+    # compute linear regression in order to be able to compute ls-means
     lm_model <- lm(formula(paste0(Y, "~ 1 + Genotype + Envir")), data = df_)
     ls_means <- as.data.frame(
       lsmeans(lm_model, ~Genotype)
