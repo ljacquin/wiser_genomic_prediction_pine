@@ -72,8 +72,8 @@ trait_names_ <- str_replace_all(files_names_spats_adj_pheno,
   replacement = ""
 )
 # initialize lists for lsmeans and blups associated to all traits
-list_ls_means_adj_pheno_per_geno <- vector("list", length(trait_names_))
-names(list_ls_means_adj_pheno_per_geno) <- trait_names_
+list_ls_means_bv_per_geno <- vector("list", length(trait_names_))
+names(list_ls_means_bv_per_geno) <- trait_names_
 
 blup_list_ <- vector("list", length(trait_names_))
 names(blup_list_) <- trait_names_
@@ -234,7 +234,7 @@ for (file_ in files_names_spats_adj_pheno) {
         "_lsmean"
       )
 
-    list_ls_means_adj_pheno_per_geno[[
+    list_ls_means_bv_per_geno[[
       str_replace_all(file_, "_spats_adjusted_.*",
         replacement = ""
       )
@@ -314,7 +314,7 @@ for (file_ in files_names_spats_adj_pheno) {
         "_lsmean"
       )
 
-    list_ls_means_adj_pheno_per_geno[[
+    list_ls_means_bv_per_geno[[
       str_replace_all(file_, "_spats_adjusted_.*",
         replacement = ""
       )
@@ -337,7 +337,7 @@ colnames(blup_pca_df) <- c("Genotype", trait_names_)
 # write blups
 fwrite(blup_pca_df, file = paste0(
   pheno_dir_path_,
-  "blup_pca_phenotypes.csv"
+  "blup_pca_breeding_values.csv"
 ))
 
 # reduce blup list
@@ -355,7 +355,7 @@ colnames(blup_df) <- c("Genotype", trait_names_)
 # write blups
 fwrite(blup_df, file = paste0(
   pheno_dir_path_,
-  "blup_phenotypes.csv"
+  "blup_breeding_values.csv"
 ))
 
 # reduce lsmeans list
@@ -363,7 +363,7 @@ lsmean_df <- Reduce(
   function(x, y) {
     merge(x, y, by = "Genotype", all = T)
   },
-  list_ls_means_adj_pheno_per_geno
+  list_ls_means_bv_per_geno
 )
 
 # write lsmeans
@@ -372,6 +372,6 @@ colnames(lsmean_df) <- c("Genotype", trait_names_)
 fwrite(lsmean_df,
   file = paste0(
     pheno_dir_path_,
-    "adjusted_ls_mean_phenotypes.csv"
+    "adjusted_ls_mean_breeding_values.csv"
   )
 )

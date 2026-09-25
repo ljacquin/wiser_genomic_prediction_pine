@@ -1,2 +1,4 @@
-data/phenotype_data/wiser_phenotype_estimates/*
+data/phenotype_data/wiser_breeding_value_estimates/*
+results/genomic_prediction_graphics/*
+results/genomic_prediction_graphics/D/genomic_h2_results_D_linear_kernel_11286_SNP_5_folds_CV_files/crosstalk-1.2.0/css/crosstalk.min.css
 src/.Rhistory
